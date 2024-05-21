@@ -1,0 +1,7 @@
+PyMuPDF
+nltk
+pandas
+numpy
+tabula
+Pillow
+ollama
