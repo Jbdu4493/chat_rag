@@ -5,3 +5,5 @@ numpy
 tabula
 Pillow
 ollama
+scipy
+pytesseract
