@@ -7,4 +7,6 @@ Pillow
 ollama
 scipy
 pytesseract
-faiss-cpu 
+faiss-cpu
+openai
+tqdm
