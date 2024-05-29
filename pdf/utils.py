@@ -47,7 +47,7 @@ class DoccumentChat:
             loader = PyPDFLoader(pdf_path)
             data = loader.load()
             text_splitter = RecursiveCharacterTextSplitter(
-                chunk_size=1000, chunk_overlap=150)
+                chunk_size=1500, chunk_overlap=150)
             docs = text_splitter.split_documents(data)
             db = ElasticsearchStore.from_documents(
                 docs,
@@ -72,7 +72,7 @@ class DoccumentChat:
         results = db.similarity_search(query, fetch_k=500, k=5)
         return [doc.page_content for doc in results]
 
-    def _get_prompt(self,question: str, contexts: List[str]):
+    def _get_prompt(self, question: str, contexts: List[str]):
         prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
         context_text = "\n\n---\n\n".join([ctx for ctx in contexts])
         prompt = prompt_template.format(
@@ -80,9 +80,6 @@ class DoccumentChat:
         return prompt
 
     def document_question(self, question: str, index_name: str):
-
         contexts = self._get_chunck_from_query(question, index_name)
-        print(contexts)
-        prompt = self._get_prompt(question = question, contexts = contexts)
-        print(prompt)
+        prompt = self._get_prompt(question=question, contexts=contexts)
         return self.llm.invoke(prompt)
