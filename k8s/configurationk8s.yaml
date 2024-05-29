@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: doccument-chat-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: doccument-chat
+  template:
+    metadata:
+      labels:
+        app: doccument-chat
+    spec:
+      containers:
+      - name: doccument-chat
+        image: jbdu4493/doccument_chat
+        ports:
+        - containerPort: 8501 # Port Streamlit par défaut
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: doccument-chat-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: doccument-chat
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8501
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      containers:
+      - name: ollama
+        image: ollama
+        ports:
+        - containerPort: 80 # Ajustez si nécessaire
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama-service
+spec:
+  type: ClusterIP
+  selector:
+    app: ollama
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.10.1
+        env:
+        - name: discovery.type
+          value: single-node
+        ports:
+        - containerPort: 9200
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch-service
+spec:
+  type: ClusterIP
+  selector:
+    app: elasticsearch
+  ports:
+    - protocol: TCP
+      port: 9200
+      targetPort: 9200
