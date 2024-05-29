@@ -7,7 +7,6 @@ from langchain_community.embeddings import OllamaEmbeddings
 from langchain.embeddings.base import Embeddings
 from langchain.prompts import ChatPromptTemplate
 from langchain_community.llms.ollama import Ollama
-from SentenceTransformerEmbeddings import SentenceTransformerEmbeddings
 import os
 from typing import List
 
@@ -36,9 +35,6 @@ index_name = "openai"
 
 embedding = OllamaEmbeddings(model="gemma")
 
-
-embedding = SentenceTransformerEmbeddings(
-    model_name="Lajavaness/sentence-camembert-large")
 embedding = OpenAIEmbeddings()
 # Suppression de tous les documents
 query = {
