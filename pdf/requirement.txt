@@ -10,3 +10,16 @@ pytesseract
 faiss-cpu
 openai
 tqdm
+sentence-transformers
+Elasticsearch
+langchain
+pypdf
+langchain-openai
+tiktoken
+langchain-community
+langchain-elasticsearch
+langchain
+sentencepiece
+protobuf
+transformers
+streamlit
