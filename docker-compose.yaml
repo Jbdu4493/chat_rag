@@ -42,8 +42,8 @@ services:
     volumes:
       - docu_chat_data:/app
     environment:
-      - SOME_OTHER_ENV_VARIABLE=value
-      - STREAMLIT_SCRIPT=your_script.py
+      - OLLAMA_URL=http://ollama:11434
+      - ELASTICSEARCH_URI=http://elasticsearch:9200
     networks:
       - doc_chat_network
     depends_on:
