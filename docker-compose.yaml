@@ -31,17 +31,16 @@ services:
       - OLLAMA_HOST=0.0.0.0
     networks:
       - doc_chat_network
-    depends_on:
-      - ollama-pulling-model
 
   curl-pulling-model:
-    image: curl
+    image: curlimages/curl
     container_name: curl-pull-model
     pull_policy: always
     command: >
-      sh -c "curl http://ollama:11434/api/pull -d '{"name": "llama3"}'"
+      sh -c "curl http://ollama:11434/api/pull -d '{\"name\": \"llama3\"}'&& \
+            curl http://ollama:11434/api/pull -d '{\"name\": \"gemma\"}'"
     tty: true
-    restart: never
+    restart: no
     depends_on:
       - ollama
     networks:
@@ -56,8 +55,6 @@ services:
     container_name: docu-chat
     ports:
       - "8501:8501"
-    volumes:
-      - docu_chat_data:/app
     environment:
       - OLLAMA_URL=http://ollama:11434
       - ELASTICSEARCH_URI=http://elasticsearch:9200
