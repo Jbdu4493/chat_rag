@@ -79,7 +79,6 @@ volumes:
   esdata: {}
   ollamav: {}
   ollamavc: {}
-  docu_chat_data: {}
 
 networks:
   doc_chat_network: {}
