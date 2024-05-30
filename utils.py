@@ -35,8 +35,9 @@ class DoccumentChat:
 
     def loead_pdf_in_es(self,
                         pdf_path: str,
-                        ) -> str:
-        index_name = self.__random_index(10)
+                        index_name=None) -> str:
+        if index_name is None:
+            index_name = self.__random_index(10)
         try:
             loader = PyPDFLoader(pdf_path)
             data = loader.load()
@@ -56,17 +57,17 @@ class DoccumentChat:
             return None
         return index_name
 
-    def __get_chunck_from_query(self, query: str, index_name: str):
+    def get_context_from_question(self, question: str, index_name: str):
         db = ElasticsearchStore(
             embedding=self.embedding,
             index_name=index_name,
             es_url=ES_URI
         )
         db.client.indices.refresh(index=index_name)
-        results = db.similarity_search(query, fetch_k=500, k=3)
+        results = db.similarity_search(question, fetch_k=500, k=3)
         return [doc.page_content for doc in results]
 
-    def __get_prompt(self, question: str, contexts: List[str]):
+    def get_prompt(self, question: str, contexts: List[str]):
         prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
         context_text = "\n\n---\n\n".join([ctx for ctx in contexts])
         prompt = prompt_template.format(
@@ -74,13 +75,13 @@ class DoccumentChat:
         return prompt
 
     def document_question(self, question: str, index_name: str):
-        contexts = self.__get_chunck_from_query(question, index_name)
-        prompt = self.__get_prompt(question=question, contexts=contexts)
+        contexts = self.get_context_from_question(question, index_name)
+        prompt = self.get_prompt(question=question, contexts=contexts)
         print(prompt)
         return self.llm.invoke(prompt)
 
     def document_question_stream(self, question: str, index_name: str):
-        contexts = self.__get_chunck_from_query(question, index_name)
-        prompt = self.__get_prompt(question=question, contexts=contexts)
+        contexts = self.get_context_from_question(question, index_name)
+        prompt = self.get_prompt(question=question, contexts=contexts)
         print(prompt)
         return self.llm.stream(prompt)
