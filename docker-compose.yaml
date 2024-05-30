@@ -1,0 +1,60 @@
+version: '3.8'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+    pull_policy: always
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    networks:
+      - doc_chat_network
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollamavc:/code
+      - ollamav:/root/.ollama
+    pull_policy: always
+    tty: true
+    restart: always
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_HOST=0.0.0.0
+    networks:
+      - doc_chat_network
+
+  doccument_chat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: docu-chat
+    ports:
+      - "8501:8501"
+    volumes:
+      - docu_chat_data:/app
+    environment:
+      - SOME_OTHER_ENV_VARIABLE=value
+      - STREAMLIT_SCRIPT=your_script.py
+    networks:
+      - doc_chat_network
+    depends_on:
+      - elasticsearch
+      - ollama
+
+volumes:
+  esdata: {}
+  ollamav: {}
+  ollamavc: {}
+  docu_chat_data: {}
+
+networks:
+  doc_chat_network: {}
