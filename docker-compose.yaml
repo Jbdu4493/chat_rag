@@ -34,26 +34,19 @@ services:
     depends_on:
       - ollama-pulling-model
 
-  ollama-pulling-model:
-    image: ollama/ollama:latest
-    container_name: ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollamavc:/code
-      - ollamav:/root/.ollama
+  curl-pulling-model:
+    image: curl
+    container_name: curl-pull-model
     pull_policy: always
     command: >
-      sh -c "ollama pull llama3 &&
-             ollama pull gemma &&
-             ollama pull nomic-embed-text"
+      sh -c "curl http://ollama:11434/api/pull -d '{"name": "llama3"}'"
     tty: true
-    restart: always
-    environment:
-      - OLLAMA_KEEP_ALIVE=24h
-      - OLLAMA_HOST=0.0.0.0
+    restart: never
+    depends_on:
+      - ollama
     networks:
       - doc_chat_network
+
  
 
   doccument_chat:
