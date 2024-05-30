@@ -31,6 +31,30 @@ services:
       - OLLAMA_HOST=0.0.0.0
     networks:
       - doc_chat_network
+    depends_on:
+      - ollama-pulling-model
+
+  ollama-pulling-model:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollamavc:/code
+      - ollamav:/root/.ollama
+    pull_policy: always
+    command: >
+      sh -c "ollama pull llama3 &&
+             ollama pull gemma &&
+             ollama pull nomic-embed-text"
+    tty: true
+    restart: always
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_HOST=0.0.0.0
+    networks:
+      - doc_chat_network
+ 
 
   doccument_chat:
     build:
@@ -49,6 +73,7 @@ services:
     depends_on:
       - elasticsearch
       - ollama
+    
 
 volumes:
   esdata: {}
