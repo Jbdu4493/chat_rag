@@ -5,3 +5,4 @@ langchain-openai
 langchain-community
 elasticsearch
 langchain_elasticsearch
+streamlit-pdf-viewer

@@ -5,6 +5,7 @@ from utils import DoccumentChat
 from langchain_openai import OpenAI
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.llms.ollama import Ollama
+from streamlit_pdf_viewer import pdf_viewer
 
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
 
@@ -39,10 +40,14 @@ with st.sidebar:
         bytes_data = uploaded_file.getvalue()
         with open(file_name, "wb") as file:
             file.write(bytes_data)
+        if "pdf_file_name" not in st.session_state:
+            st.session_state["pdf_file_name"]=file_name
         if "doccument_chat" in st.session_state:
             index = st.session_state["doccument_chat"].loead_pdf_in_es(
                 file_name)
             st.session_state["index"] = index
+    if "pdf_file_name" in st.session_state:
+        pdf_viewer(st.session_state["pdf_file_name"])
 
 if "messages" not in st.session_state:
     st.session_state.messages = []

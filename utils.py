@@ -18,7 +18,7 @@ Utilises ces données de contexte:
 
 {context}.
 
-Réponds à cette question en cherchant dans le contexte:{question}
+Réponds à cette question en cherchant dans le contexte: {question}
 
 Si les informations ne sont pas présentes, dis tout simplement 'Je ne sais pas'.
 """
