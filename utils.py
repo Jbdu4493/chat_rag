@@ -10,7 +10,7 @@ import string
 from typing import List
 
 # Récupération de l'URI d'Elasticsearch à partir des variables d'environnement
-ES_URI = os.environ.get('ELASTICSEARCH_URI')
+ES_URI = os.environ.get('ELASTICSEARCH_URI', "http://localhost:9200")
 
 # Modèle de prompt pour les questions
 PROMPT_TEMPLATE = """

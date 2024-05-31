@@ -9,14 +9,12 @@ from streamlit_pdf_viewer import pdf_viewer
 
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
 
-
-MODEL_NAME = "gpt-3.5-turbo"
 MODEL_NAME = "gemma"
 EMBED_MODEL_NAME = "text-embedding-3-large"
 
 st.session_state["llm"] = Ollama(model=MODEL_NAME, base_url=OLLAMA_URL)
 
-st.title("ChatGPT-like clone")
+st.title("Document Chat")
 
 with st.sidebar:
     apikey = st.text_input(label="OPENAI_API_KEY")

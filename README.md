@@ -19,7 +19,7 @@ Ensure you have the following installed on your system:
 - Docker Compose
 - Kubernetes (kubectl and a cluster)
 - Python 3.11
-- OpenAI API Key (Get your API key [here](https://openai.com/api/))
+- OpenAI API Key (Get your API key [here](https://beta.openai.com/signup/))
 
 ## Installation
 
@@ -47,6 +47,41 @@ Ensure you have the following installed on your system:
 2. Apply the Kubernetes configurations:
     ```bash
     kubectl apply -f configurationk8s.yaml
+    ```
+
+### Direct Installation for Better Performance
+
+This installation method provides better performance for Ollama by running it directly on your host system.
+
+
+1. Install Ollama from [this link](https://ollama.com/download).
+2. Start Ollama:
+    ```bash
+    ollama start
+    ```
+
+3. Pull the Gemma model:
+    ```bash
+    ollama pull gemma
+    ```
+
+4. Start Elasticsearch using Docker:
+    ```bash
+    docker run -d --name elasticsearch -p 9200:9200  -v esdata:/usr/share/elasticsearch/data docker.elastic.co/elasticsearch/elasticsearch:latest
+    ```
+5. Clone the repository:
+    ```bash
+    git clone https://github.com/Jbdu4493/chat_rag
+    cd chat_rag/k8s
+    ```
+6. Install Python dependencies:
+    ```bash
+    pip install -r requirement.txt
+    ```
+
+7. Run the Streamlit application:
+    ```bash
+    streamlit run front.py
     ```
 
 ## Usage
