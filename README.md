@@ -67,7 +67,13 @@ This installation method provides better performance for Ollama by running it di
 
 4. Start Elasticsearch using Docker:
     ```bash
-    docker run -d --name elasticsearch -p 9200:9200  -v esdata:/usr/share/elasticsearch/data docker.elastic.co/elasticsearch/elasticsearch:latest
+    docker run -d --name elasticsearch \
+               -p 9200:9200 \
+               -e discovery.type="single-node" \
+               -e xpack.security.enabled="false" \
+               -e xpack.security.http.ssl.enabled="false" \
+               -v esdata:/usr/share/elasticsearch/data \
+               docker.elastic.co/elasticsearch/elasticsearch:8.13.4
     ```
 5. Clone the repository:
     ```bash
