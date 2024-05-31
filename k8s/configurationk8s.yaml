@@ -1,77 +1,40 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: doccument-chat-deployment
+  name: esdata-pvc
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: doccument-chat
-  template:
-    metadata:
-      labels:
-        app: doccument-chat
-    spec:
-      containers:
-      - name: doccument-chat
-        image: jbdu4493/doccument_chat
-        ports:
-        - containerPort: 8501 # Port Streamlit par défaut
-
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
 ---
 apiVersion: v1
-kind: Service
+kind: PersistentVolumeClaim
 metadata:
-  name: doccument-chat-service
+  name: ollamavc-pvc
 spec:
-  type: LoadBalancer
-  selector:
-    app: doccument-chat
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8501
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ollama-deployment
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ollama
-  template:
-    metadata:
-      labels:
-        app: ollama
-    spec:
-      containers:
-      - name: ollama
-        image: ollama
-        ports:
-        - containerPort: 80 # Ajustez si nécessaire
-
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
 ---
 apiVersion: v1
-kind: Service
+kind: PersistentVolumeClaim
 metadata:
-  name: ollama-service
+  name: ollamav-pvc
 spec:
-  type: ClusterIP
-  selector:
-    app: ollama
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: elasticsearch-deployment
+  name: elasticsearch
 spec:
   replicas: 1
   selector:
@@ -84,23 +47,140 @@ spec:
     spec:
       containers:
       - name: elasticsearch
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.10.1
-        env:
-        - name: discovery.type
-          value: single-node
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
         ports:
         - containerPort: 9200
-
+        env:
+        - name: discovery.type
+          value: "single-node"
+        - name: xpack.security.enabled
+          value: "false"
+        - name: xpack.security.http.ssl.enabled
+          value: "false"
+        volumeMounts:
+        - name: esdata
+          mountPath: /usr/share/elasticsearch/data
+      volumes:
+      - name: esdata
+        persistentVolumeClaim:
+          claimName: esdata-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: elasticsearch-service
+  name: elasticsearch
 spec:
-  type: ClusterIP
+  ports:
+  - port: 9200
+    targetPort: 9200
   selector:
     app: elasticsearch
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      containers:
+      - name: ollama
+        image: ollama/ollama:latest
+        ports:
+        - containerPort: 11434
+        env:
+        - name: OLLAMA_KEEP_ALIVE
+          value: "24h"
+        - name: OLLAMA_HOST
+          value: "0.0.0.0"
+        resources:
+          requests:
+            memory: "5Gi"
+            cpu: "500m"
+          limits:
+            memory: "8Gi"
+            cpu: "3000m"
+        volumeMounts:
+        - name: ollamavc
+          mountPath: /code
+        - name: ollamav
+          mountPath: /root/.ollama
+        tty: true
+      volumes:
+      - name: ollamavc
+        persistentVolumeClaim:
+          claimName: ollamavc-pvc
+      - name: ollamav
+        persistentVolumeClaim:
+          claimName: ollamav-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama
+spec:
   ports:
-    - protocol: TCP
-      port: 9200
-      targetPort: 9200
+  - port: 11434
+    targetPort: 11434
+  selector:
+    app: ollama
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: curl-pull-model
+spec:
+  template:
+    spec:
+      containers:
+      - name: curl-pull-model
+        image: curlimages/curl
+        command: ["sh", "-c", "curl http://ollama:11434/api/pull -d '{\"name\": \"gemma\"}'"]
+        tty: true
+      restartPolicy: Never
+  backoffLimit: 4
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docu-chat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docu-chat
+  template:
+    metadata:
+      labels:
+        app: docu-chat
+    spec:
+      containers:
+      - name: docu-chat
+        image: jbdu4493/doccument_chat:latest
+        ports:
+        - containerPort: 8501
+        env:
+        - name: OLLAMA_URL
+          value: "http://ollama:11434"
+        - name: ELASTICSEARCH_URI
+          value: "http://elasticsearch:9200"
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: docu-chat
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8501
+    targetPort: 8501
+  selector:
+    app: docu-chat

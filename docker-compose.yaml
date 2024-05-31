@@ -36,8 +36,7 @@ services:
     container_name: curl-pull-model
     pull_policy: always
     command: >
-      sh -c "curl http://ollama:11434/api/pull -d '{\"name\": \"llama3\"}'&& \
-            curl http://ollama:11434/api/pull -d '{\"name\": \"gemma\"}'"
+      sh -c "curl http://ollama:11434/api/pull -d '{\"name\": \"gemma\"}'"
     tty: true
     restart: no
     depends_on:
