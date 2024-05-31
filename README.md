@@ -1,6 +1,6 @@
 # Document Chat Application
 
-This project is a document chat application that leverages Elasticsearch for search capabilities and Ollama for natural language processing. The application is containerized using Docker and can be deployed using Docker Compose or Kubernetes. Currently, the application only supports PDF documents.
+This project is a document chat application that leverages Elasticsearch for search capabilities and Ollama for natural language processing. The application is containerized using Docker and can be deployed using Docker Compose or Kubernetes. Currently, the application only supports PDF documents. The user interface is developed with Streamlit.
 
 ## Table of Contents
 
@@ -19,7 +19,7 @@ Ensure you have the following installed on your system:
 - Docker Compose
 - Kubernetes (kubectl and a cluster)
 - Python 3.11
-- OpenAI API Key (Get your API key [here](https://openai.com/index/openai-api/))
+- OpenAI API Key (Get your API key [here](https://openai.com/api/))
 
 ## Installation
 
@@ -57,7 +57,7 @@ Ensure you have the following installed on your system:
 
 ### Interacting with the Application
 
-- The application provides a chat interface where you can interact with the document processing and search capabilities powered by Elasticsearch and Ollama. Please note that the application only supports PDF documents.
+- The application provides a chat interface where you can interact with the document processing and search capabilities powered by Elasticsearch and Ollama. Please note that the application only supports PDF documents. The user interface is developed with Streamlit.
 
 ## Configuration
 
