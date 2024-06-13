@@ -106,8 +106,8 @@ This installation method provides better performance for Ollama by running it di
 
 The application can be configured using the following environment variables:
 
-- `OLLAMA_URL`: URL of the Ollama service (default: `http://ollama:11434`)
-- `ELASTICSEARCH_URI`: URL of the Elasticsearch service (default: `http://elasticsearch:9200`)
+- `OLLAMA_URL`: URL of the Ollama service (default: `http://localhost:11434`)
+- `ELASTICSEARCH_URI`: URL of the Elasticsearch service (default: `http://localhost:9200`)
 - `OPENAI_API_KEY`: Your OpenAI API key
 
 ### Docker Compose Configuration
