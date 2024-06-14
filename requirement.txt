@@ -6,3 +6,4 @@ langchain-community
 elasticsearch
 langchain_elasticsearch
 streamlit-pdf-viewer
+docx2txt
